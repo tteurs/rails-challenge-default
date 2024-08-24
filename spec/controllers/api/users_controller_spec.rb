@@ -17,6 +17,38 @@ RSpec.describe Api::UsersController, type: :controller do
       expect(response.content_type).to eq('application/json; charset=utf-8')
       expect(JSON.parse(response.body)["users"].first["email"]).to eq(user.email)
     end
+
+    it 'filters users by email' do
+      User.create!(email: 'test1@example.com', phone_number: '1234567890', password: 'securepassword')
+      User.create!(email: 'test2@example.com', phone_number: '0987654321', password: 'securepassword')
+      get :index, params: { email: 'test1@example.com' }
+      users = JSON.parse(response.body)["users"]
+      expect(users.count).to eq(1)
+      expect(users.first["email"]).to eq('test1@example.com')
+    end
+
+    it 'filters users by full_name' do
+      User.create!(email: 'test1@example.com', phone_number: '1234567890', full_name: 'John Doe', password: 'securepassword')
+      User.create!(email: 'test2@example.com', phone_number: '0987654321', full_name: 'Jane Doe', password: 'securepassword')
+      get :index, params: { full_name: 'John Doe' }
+      users = JSON.parse(response.body)["users"]
+      expect(users.count).to eq(1)
+      expect(users.first["full_name"]).to eq('John Doe')
+    end
+
+    it 'filters users by metadata' do
+      User.create!(email: 'test1@example.com', phone_number: '1234567890', metadata: 'male', password: 'securepassword')
+      User.create!(email: 'test2@example.com', phone_number: '0987654321', metadata: 'female', password: 'securepassword')
+      get :index, params: { metadata: 'male' }
+      users = JSON.parse(response.body)["users"]
+      expect(users.count).to eq(1)
+      expect(users.first["metadata"]).to eq('male')
+    end
+
+    it 'returns 422 if an invalid filter is used' do
+      get :index, params: { invalid_param: 'test' }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
   end
 
   describe 'POST #create' do
@@ -47,6 +79,19 @@ RSpec.describe Api::UsersController, type: :controller do
         }
         expect(response).to have_http_status(:created)
         expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+
+      it 'triggers AccountKeyJob' do
+        expect(AccountKeyJob).to receive(:perform_later)
+        post :create, params: {
+          user: {
+            email: 'test@example.com',
+            phone_number: '1234567890',
+            full_name: 'Test User',
+            password: 'securepassword',
+            metadata: 'metadata'
+          }
+        }
       end
     end
 
