@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  before_validation :generate_key, on: :create
+
   validates :email, presence: true, uniqueness: true, length: { maximum: 200 }
   validates :phone_number, presence: true, uniqueness: true, length: { maximum: 20 }
   validates :password, presence: true, length: { maximum: 100 }
