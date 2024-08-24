@@ -48,6 +48,7 @@ RSpec.describe Api::UsersController, type: :controller do
     it 'returns 422 if an invalid filter is used' do
       get :index, params: { cellphone: 'test' }
       expect(response).to have_http_status(:unprocessable_entity)
+      expect(JSON.parse(response.body)).to eq({"errors" => ["Invalid parameter"]})
     end
   end
 

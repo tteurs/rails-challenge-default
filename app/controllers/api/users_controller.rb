@@ -3,7 +3,8 @@ module Api
     ALLOWED_FILTERS = %w[email full_name metadata].freeze
 
     def index
-      if (filter_params.keys - ALLOWED_FILTERS).any?
+      invalid_params = params.to_unsafe_h.keys - ALLOWED_FILTERS - ['controller', 'action']
+      if invalid_params.any?
         render json: { errors: ['Invalid parameter'] }, status: :unprocessable_entity
       else
         @users = User.all.order(created_at: :desc)
@@ -33,7 +34,7 @@ module Api
     end
 
     def filter_params
-      params.permit(:email, :full_name, :metadata)
+      params.to_unsafe_h.slice(*ALLOWED_FILTERS)
     end
   end
 end
