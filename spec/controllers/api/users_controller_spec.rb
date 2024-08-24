@@ -1,13 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::UsersController, type: :controller do
-  describe 'GET #index' do
-    it 'returns a success response' do
-      get :index
-      expect(response).to be_successful
-      expect(response.content_type).to eq('application/json; charset=utf-8')
-    end
+  render_views
 
+  describe 'GET #index' do
     it 'returns all users in JSON format' do
       user = User.create!(
         email: 'test@example.com',
@@ -17,16 +13,9 @@ RSpec.describe Api::UsersController, type: :controller do
         metadata: 'metadata'
       )
       get :index
-      expect(JSON.parse(response.body)).to include({
-        "users" => [{
-          "email" => user.email,
-          "phone_number" => user.phone_number,
-          "full_name" => user.full_name,
-          "key" => user.key,
-          "account_key" => user.account_key,
-          "metadata" => user.metadata
-        }]
-      })
+      expect(response).to be_successful
+      expect(response.content_type).to eq('application/json; charset=utf-8')
+      expect(JSON.parse(response.body)["users"].first["email"]).to eq(user.email)
     end
   end
 

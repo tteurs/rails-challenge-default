@@ -17,5 +17,15 @@ RSpec.describe User, type: :model do
     expect(user).to_not be_valid
   end
 
-  # Adicione mais testes de validação conforme necessário
+  it 'generates a key before validation' do
+    user = User.new(
+      email: 'test@example.com',
+      phone_number: '1234567890',
+      full_name: 'Test User',
+      password: 'securepassword',
+      metadata: 'metadata'
+    )
+    user.valid?
+    expect(user.key).to be_present
+  end
 end
