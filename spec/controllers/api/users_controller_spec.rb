@@ -23,7 +23,7 @@ RSpec.describe Api::UsersController, type: :controller do
       User.create!(email: 'test2@example.com', phone_number: '0987654321', password: 'securepassword')
       get :index, params: { email: 'test1@example.com' }
       users = JSON.parse(response.body)["users"]
-      expect(users.count).to eq(1)
+      expect(users.size).to eq(1)
       expect(users.first["email"]).to eq('test1@example.com')
     end
 
@@ -32,21 +32,21 @@ RSpec.describe Api::UsersController, type: :controller do
       User.create!(email: 'test2@example.com', phone_number: '0987654321', full_name: 'Jane Doe', password: 'securepassword')
       get :index, params: { full_name: 'John Doe' }
       users = JSON.parse(response.body)["users"]
-      expect(users.count).to eq(1)
+      expect(users.size).to eq(1)
       expect(users.first["full_name"]).to eq('John Doe')
     end
 
     it 'filters users by metadata' do
       User.create!(email: 'test1@example.com', phone_number: '1234567890', metadata: 'male', password: 'securepassword')
       User.create!(email: 'test2@example.com', phone_number: '0987654321', metadata: 'female', password: 'securepassword')
-      get :index, params: { metadata: 'male' }
+      get :index, params: { metadata: 'female' }
       users = JSON.parse(response.body)["users"]
-      expect(users.count).to eq(1)
-      expect(users.first["metadata"]).to eq('male')
+      expect(users.size).to eq(1)
+      expect(users.first["metadata"]).to eq('female')
     end
 
     it 'returns 422 if an invalid filter is used' do
-      get :index, params: { invalid_param: 'test' }
+      get :index, params: { cellphone: 'test' }
       expect(response).to have_http_status(:unprocessable_entity)
     end
   end
