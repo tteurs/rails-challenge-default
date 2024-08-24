@@ -13,7 +13,7 @@ class User < ApplicationRecord
   private
 
   def generate_key
-    self.key = SecureRandom.hex(32)
+    self.key ||= SecureRandom.hex(32)
   end
 
   def hash_password

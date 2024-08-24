@@ -36,13 +36,13 @@ RSpec.describe User, type: :model do
   it 'is not valid if phone_number is not unique' do
     User.create!(email: 'test1@example.com', phone_number: '1234567890', password: 'securepassword')
     user = User.new(email: 'test2@example.com', phone_number: '1234567890', password: 'securepassword')
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if key is not unique' do
-    user1 = User.create!(email: 'test1@example.com', phone_number: '1234567890', password: 'securepassword')
+    user1 = User.create!(email: 'test1@example.com', phone_number: '1234567890', password: 'securepassword', key: SecureRandom.hex(32))
     user2 = User.new(email: 'test2@example.com', phone_number: '0987654321', password: 'securepassword', key: user1.key)
-    expect(user2).to_not be valid
+    expect(user2).to_not be_valid
   end
 
   it 'generates a key before validation' do
@@ -59,31 +59,31 @@ RSpec.describe User, type: :model do
 
   it 'is not valid if email exceeds maximum length' do
     user = User.new(email: 'a' * 201 + '@example.com', phone_number: '1234567890', password: 'securepassword')
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if phone_number exceeds maximum length' do
     user = User.new(email: 'test@example.com', phone_number: '1' * 21, password: 'securepassword')
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if password exceeds maximum length' do
     user = User.new(email: 'test@example.com', phone_number: '1234567890', password: 'a' * 101)
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if key exceeds maximum length' do
     user = User.new(email: 'test@example.com', phone_number: '1234567890', password: 'securepassword', key: 'a' * 101)
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if account_key exceeds maximum length' do
     user = User.new(email: 'test@example.com', phone_number: '1234567890', password: 'securepassword', account_key: 'a' * 101)
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 
   it 'is not valid if metadata exceeds maximum length' do
     user = User.new(email: 'test@example.com', phone_number: '1234567890', password: 'securepassword', metadata: 'a' * 2001)
-    expect(user).to_not be valid
+    expect(user).to_not be_valid
   end
 end
